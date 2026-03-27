@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
+import os
 
 st.set_page_config(page_title="WSB Sentiment Analysis", layout="wide")
 
@@ -10,26 +11,27 @@ st.title("Reddit WallStreetBets — Sentiment vs Stock Price")
 st.markdown("Explore how Reddit sentiment correlates with meme stock movements")
 
 @st.cache_data
+
 def load_data():
-    df = pd.read_csv(r'E:\sentiment_stock_analysis\data\processed\wsb_cleaned.csv')
-    
-    gme_s = pd.read_csv(r'E:\sentiment_stock_analysis\data\processed\gme_sentiment.csv')
-    amc_s = pd.read_csv(r'E:\sentiment_stock_analysis\data\processed\amc_sentiment.csv')
-    tsla_s = pd.read_csv(r'E:\sentiment_stock_analysis\data\processed\tsla_sentiment.csv')
-    
-    gme_p = pd.read_csv(r'E:\sentiment_stock_analysis\data\processed\GME_price.csv', skiprows=2)
-    amc_p = pd.read_csv(r'E:\sentiment_stock_analysis\data\processed\AMC_price.csv', skiprows=2)
-    tsla_p = pd.read_csv(r'E:\sentiment_stock_analysis\data\processed\TSLA_price.csv', skiprows=2)
-    
+    base_dir = os.path.dirname(os.path.dirname(__file__))  
+    data_path = os.path.join(base_dir, 'data', 'processed')
+
+    df = pd.read_csv(os.path.join(data_path, 'wsb_cleaned.csv'))
+    gme_s = pd.read_csv(os.path.join(data_path, 'gme_sentiment.csv'))
+    amc_s = pd.read_csv(os.path.join(data_path, 'amc_sentiment.csv'))
+    tsla_s = pd.read_csv(os.path.join(data_path, 'tsla_sentiment.csv'))
+    gme_p = pd.read_csv(os.path.join(data_path, 'GME_price.csv'), skiprows=2)
+    amc_p = pd.read_csv(os.path.join(data_path, 'AMC_price.csv'), skiprows=2)
+    tsla_p = pd.read_csv(os.path.join(data_path, 'TSLA_price.csv'), skiprows=2)
+
     for p in [gme_p, amc_p, tsla_p]:
         p.columns = ['Date', 'Close', 'High', 'Low', 'Open', 'Volume', 'daily_return']
-    
+
     return df, {
         'GME': (gme_s, gme_p),
         'AMC': (amc_s, amc_p),
         'TSLA': (tsla_s, tsla_p)
     }
-
 df, stock_data = load_data()
 
 # ── Sidebar ──
